@@ -1,8 +1,17 @@
+# 概要
+沖縄オープンデータより取得できるAPIと連携するmcpサーバ
 
+# デモ
 https://github.com/user-attachments/assets/8bd8d39b-41f4-453c-a884-3fb71a490f03
 
 
+# 通常 vs mcp
+<img width="500" alt="image" src="https://github.com/user-attachments/assets/ca7dbab8-56c8-487a-84ae-4018cecc6d12" />
 
+
+<img width="500" alt="image" src="https://github.com/user-attachments/assets/a99d3e5d-b185-4091-992b-d7cd7a0886eb" />
+
+# アーキテクチャ
 ![1000000600](https://github.com/user-attachments/assets/26e28887-78bb-444b-87f9-a3e206f26edd)
 
 
