@@ -1,4 +1,7 @@
 
+![1000000600](https://github.com/user-attachments/assets/26e28887-78bb-444b-87f9-a3e206f26edd)
+
+
 # setup
 以下のコマンドを実行する
 ```
