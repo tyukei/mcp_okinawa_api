@@ -11,7 +11,7 @@ CKAN_BASE   = "https://data.bodik.jp/api/3/action"
 RESOURCE_ID = os.getenv("RESOURCE_ID")
 
 # FastMCP サーバインスタンスを生成
-mcp = FastMCP("OkinawaTourism")  # サーバ名を任意に設定 :contentReference[oaicite:3]{index=3}
+mcp = FastMCP("OkinawaTourism")  
 
 # --- 1) Resource: 最初の N 件取得 ---  
 @mcp.resource("okinawa://records?limit={limit}")
@@ -19,19 +19,23 @@ async def get_records(limit: int = 5) -> dict:
     """
     CKAN DataStore の datastore_search API を呼び出し、
     指定件数分のレコードを返却します。
+    例:
+    https://data.bodik.jp/api/3/action/datastore_search?resource_id=6d89d0fe-401f-4753-8548-4cc71c8ee5bf&q=浦添市
     """
     params = {"resource_id": RESOURCE_ID, "limit": limit}
     async with httpx.AsyncClient() as client:
         resp = await client.get(f"{CKAN_BASE}/datastore_search", params=params)
         resp.raise_for_status()
         return resp.json()
-# CKAN DataStore は resource_id をテーブル名として扱います :contentReference[oaicite:4]{index=4}
+
 
 # --- 2) Tool: キーワード検索 ---  
 @mcp.tool()
 async def search_records(q: str) -> dict:
     """
     CKAN DataStore の q パラメータによる全文検索を実行します。
+    例:
+    https://data.bodik.jp/api/3/action/datastore_search?resource_id=6d89d0fe-401f-4753-8548-4cc71c8ee5bf&q=j浦添市
     """
     params = {"resource_id": RESOURCE_ID, "q": q}
     async with httpx.AsyncClient() as client:
