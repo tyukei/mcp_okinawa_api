@@ -1,4 +1,5 @@
 from mcp.server.fastmcp import FastMCP
+# from mcp.server.fastmcp.prompts import UserMessage
 import httpx
 from dotenv import load_dotenv
 import os
@@ -17,10 +18,14 @@ mcp = FastMCP("OkinawaTourism")
 @mcp.resource("okinawa://records?limit={limit}")
 async def get_records(limit: int = 5) -> dict:
     """
-    CKAN DataStore の datastore_search API を呼び出し、
-    指定件数分のレコードを返却します。
-    例:
-    https://data.bodik.jp/api/3/action/datastore_search?resource_id=6d89d0fe-401f-4753-8548-4cc71c8ee5bf&q=浦添市
+    CKAN DataStore API（datastore_search）を使用して、
+    指定された件数のレコードを取得します。
+
+    引数:
+        limit (int): 取得するレコードの件数。デフォルトは5。
+
+    戻り値:
+        dict: APIからのJSONレスポンスを含む辞書。
     """
     params = {"resource_id": RESOURCE_ID, "limit": limit}
     async with httpx.AsyncClient() as client:
@@ -28,35 +33,40 @@ async def get_records(limit: int = 5) -> dict:
         resp.raise_for_status()
         return resp.json()
 
-
-# --- 2) Tool: キーワード検索 ---  
+# --- エンドポイント②: キーワードでレコードを検索 ---  
 @mcp.tool()
 async def search_records(q: str) -> dict:
     """
-    CKAN DataStore の q パラメータによる全文検索を実行します。
-    例:
-    https://data.bodik.jp/api/3/action/datastore_search?resource_id=6d89d0fe-401f-4753-8548-4cc71c8ee5bf&q=j浦添市
+    CKAN DataStore API（datastore_search）の `q` パラメータを使用して、
+    レコードをキーワード検索します。
+
+    引数:
+        q (str): 検索キーワード。
+
+    戻り値:
+        dict: APIからのJSONレスポンスを含む辞書。
     """
     params = {"resource_id": RESOURCE_ID, "q": q}
     async with httpx.AsyncClient() as client:
         resp = await client.get(f"{CKAN_BASE}/datastore_search", params=params)
         resp.raise_for_status()
         return resp.json()
-# DataStore API では q, offset, limit, filters, sort 等が利用可能です :contentReference[oaicite:5]{index=5}
 
-# # --- 3) Tool: SQL 実行 ---  
-# @mcp.tool()
-# async def run_sql(sql: str) -> dict:
+# # --- プロンプト: 沖縄方言での応答を生成 ---  
+# @mcp.prompt(name="okinawa_dialect_prompt", description="指定されたキーワードに対する沖縄方言の応答を生成します。")
+# def okinawa_dialect_prompt(keyword: str) -> UserMessage:
 #     """
-#     CKAN DataStore の SQL クエリ実行エンドポイントを呼び出します。
-#     """
-#     params = {"sql": sql}
-#     async with httpx.AsyncClient() as client:
-#         resp = await client.get(f"{CKAN_BASE}/datastore_search_sql", params=params)
-#         resp.raise_for_status()
-#         return resp.json()
-# # datastore_search_sql では標準的な SQL 文を投げられます :contentReference[oaicite:6]{index=6}
+#     指定されたキーワードに対する沖縄方言の応答を生成します。
 
-# サーバ起動（SSE トランスポート）
+#     引数:
+#         keyword (str): 応答を生成するためのキーワード。
+
+#     戻り値:
+#         UserMessage: 沖縄方言での応答を含むユーザーメッセージ。
+#     """
+#     content = f"ハイサイ！「{keyword}」について、沖縄の言葉で教えてくれませんか？"
+#     return UserMessage(content=content)
+
+# --- エントリポイント: SSE トランスポートでサーバ起動 ---  
 if __name__ == "__main__":
     mcp.run()
